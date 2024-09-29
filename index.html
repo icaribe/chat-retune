@@ -1,0 +1,32 @@
+<!DOCTYPE html>  
+<html lang="pt-BR">  
+<head>  
+    <meta charset="UTF-8">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+    <title>Chatbot Retune</title>  
+    <link rel="stylesheet" href="styles.css">  
+</head>  
+<body>  
+
+    <div class="chat-container">  
+        <h1>Chatbot Retune</h1>  
+
+        <div id="credentials">  
+            <label for="token">Token de Acesso:</label>  
+            <input type="text" id="token" placeholder="Insira seu token aqui" required>  
+            <label for="agentId">ID do Agente:</label>  
+            <input type="text" id="agentId" placeholder="Insira o ID do agente aqui" required>  
+            <button id="setCredentials">Salvar Credenciais</button>  
+        </div>  
+
+        <div id="chat">  
+            <div id="messages"></div>  
+            <input type="text" id="inputMessage" placeholder="Digite sua mensagem..." required>  
+            <button id="sendMessage">Enviar</button>  
+            <button id="loadOldConversations">Carregar Conversas Antigas</button>  
+        </div>  
+    </div>  
+
+    <script src="script.js"></script>  
+</body>  
+</html>
