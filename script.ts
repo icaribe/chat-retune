@@ -1,66 +1,79 @@
-let token = '';  
-let agentId = '';  
-
-// Função para definir as credenciais  
-document.getElementById('setCredentials').addEventListener('click', () => {  
-    token = document.getElementById('token').value.trim();  
-    agentId = document.getElementById('agentId').value.trim();  
-
-    if (token && agentId) {  
-        alert('Credenciais salvas com sucesso!');  
-        document.getElementById('credentials').style.display = 'none';  
-        document.getElementById('chat').style.display = 'block';  
-    } else {  
-        alert('Por favor, preencha todos os campos!');  
+document.getElementById('authenticate').addEventListener('click', async () => {  
+    const workspace = document.getElementById('workspace').value;  
+    if (!workspace) {  
+        alert("Por favor, insira um Workspace.");  
+        return;  
     }  
-});  
-
-// Função para enviar mensagem  
-document.getElementById('sendMessage').addEventListener('click', () => {  
-    const messageInput = document.getElementById('inputMessage');  
-    const message = messageInput.value.trim();  
-
-    if (message) {  
-        addMessage(`Você: ${message}`);  
-        sendMessageToRetune(message);  
-        messageInput.value = ''; // Limpa o campo de entrada  
-    }  
-});  
-
-// Função para adicionar mensagem ao chat  
-function addMessage(message) {  
-    const messagesDiv = document.getElementById('messages');  
-    messagesDiv.innerHTML += `<div>${message}</div>`;  
-    messagesDiv.scrollTop = messagesDiv.scrollHeight; // Rola para baixo automaticamente  
-}  
-
-// Função para enviar mensagem para a API do Retune  
-function sendMessageToRetune(message) {  
-    fetch('https://api.retune.ai/v1/chat', {  
-        method: 'POST',  
-        headers: {  
-            'Authorization': `Bearer ${token}`,  
-            'Content-Type': 'application/json',  
-        },  
-        body: JSON.stringify({ message, agentId }) // Incluindo o ID do agente na requisição  
-    })  
-    .then(response => response.json())  
-    .then(data => {  
-        if (data.response) {  
-            addMessage(`Bot: ${data.response}`);  
+    try {  
+        const response = await fetch(`/api/authenticate/${workspace}`); // Endpoint fictício para autenticação  
+        if (response.ok) {  
+            document.querySelector('.chat-area').style.display = 'block';  
+            loadThreads(workspace);  
         } else {  
-            addMessage(`Bot: Não consegui entender a mensagem.`);  
+            alert("Erro ao autenticar. Verifique seu Workspace.");  
         }  
-    })  
-    .catch(error => {  
-        console.error('Erro:', error);  
-        addMessage(`Bot: Ocorreu um erro ao enviar a mensagem.`);  
-    });  
+    } catch (error) {  
+        console.error("Erro ao autenticar:", error);  
+    }  
+});  
+
+async function loadThreads(workspace) {  
+    try {  
+        const response = await fetch(`/api/threads/${workspace}`); // Endpoint para carregar threads  
+        const threads = await response.json();  
+        const container = document.getElementById('threads-container');  
+        threads.forEach(thread => {  
+            const threadDiv = document.createElement('div');  
+            threadDiv.textContent = thread.title;  
+            threadDiv.className = 'thread';  
+            threadDiv.addEventListener('click', () => loadMessages(thread.id));  
+            container.appendChild(threadDiv);  
+        });  
+    } catch (error) {  
+        console.error("Erro ao carregar threads:", error);  
+    }  
 }  
 
-// Função para carregar conversas antigas  
-document.getElementById('loadOldConversations').addEventListener('click', () => {  
-    // Aqui, você pode implementar a lógica de carregamento de mensagens do passado, se necessário.  
-    // Por enquanto, vamos apenas adicionar uma mensagem fictícia.  
-    addMessage('Bot: Esta é uma conversa antiga de exemplo.');  
+async function loadMessages(threadId) {  
+    try {  
+        const response = await fetch(`/api/messages/${threadId}`); // Endpoint para carregar mensagens  
+        const messages = await response.json();  
+        const messagesDiv = document.getElementById('messages');  
+        messagesDiv.innerHTML = '';  // Limpa mensagens anteriores  
+        messages.forEach(message => {  
+            const p = document.createElement('p');  
+            p.textContent = message.content;  
+            messagesDiv.appendChild(p);  
+        });  
+    } catch (error) {  
+        console.error("Erro ao carregar mensagens:", error);  
+    }  
+}  
+
+document.getElementById('send-message').addEventListener('click', async () => {  
+    const messageInput = document.getElementById('message-input');  
+    const message = messageInput.value;  
+    const threadId = /* ID da thread ativa */;  
+    
+    if (!message) {  
+        alert("Digite uma mensagem antes de enviar.");  
+        return;  
+    }  
+
+    try {  
+        const response = await fetch(`/api/messages/${threadId}`, {  
+            method: 'POST',  
+            headers: {  
+                'Content-Type': 'application/json'  
+            },  
+            body: JSON.stringify({ content: message })  
+        });  
+
+        if (response.ok) {  
+            messageInput.value = '';  // Limpa o campo de entrada  
+            loadMessages(threadId);    // Recarrega mensagens para incluir a nova  
+        }  
+    } catch (error) {  
+        console.error("Erro ao enviar mensagem:", error);  
+    }  
 });
