@@ -1,123 +1,132 @@
-// Função de login com API Key
-function login() {
-  const apiKey = document.getElementById('api-key').value;
+const apiKeyInput = document.getElementById('apiKey');
+const chatIdInput = document.getElementById('chatId');
+const createThreadBtn = document.getElementById('createThreadBtn');
+const loadThreadsBtn = document.getElementById('loadThreadsBtn');
+const threadList = document.getElementById('threadList');
+const threadSection = document.getElementById('threadSection');
+const continueSection = document.getElementById('continueSection');
+const threadIdInput = document.getElementById('threadId');
+const messageInput = document.getElementById('message');
+const sendMessageBtn = document.getElementById('sendMessageBtn');
+const errorMessage = document.getElementById('errorMessage');
 
-  if (apiKey) {
-    localStorage.setItem('apiKey', apiKey); // Armazenando a API key localmente
-    alert("Login bem-sucedido!");
-    document.getElementById('login-container').style.display = 'none';
-    document.getElementById('bot-container').style.display = 'block';
-    document.getElementById('conversation-container').style.display = 'block';
-  } else {
-    alert("Por favor, insira sua API Key.");
-  }
+// Função para exibir mensagens de erro
+function showError(message) {
+  errorMessage.style.display = 'block';
+  errorMessage.innerText = message;
 }
 
-// Função para criar um novo bot
-function createBot() {
-  const apiKey = localStorage.getItem('apiKey');
-  if (!apiKey) {
-    alert("Por favor, faça login.");
+// Função para criar um novo thread
+createThreadBtn.addEventListener('click', async function() {
+  const apiKey = apiKeyInput.value;
+  const chatId = chatIdInput.value;
+
+  if (!apiKey || !chatId) {
+    showError('API Key e Chat ID são obrigatórios.');
     return;
   }
 
-  fetch('https://api.retune.so/v1/bots', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${apiKey}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ name: "Novo Bot" })
-  })
-  .then(response => response.json())
-  .then(data => {
-    alert("Bot criado com sucesso!");
-    loadBots();  // Atualiza a lista de bots
-  })
-  .catch(error => console.error("Erro ao criar bot:", error));
-}
+  try {
+    const response = await fetch(`https://retune.so/api/chat/${chatId}/new-thread`, {
+      method: 'POST',
+      headers: {
+        'X-Workspace-API-Key': apiKey,
+        'Content-Type': 'application/json'
+      }
+    });
 
-// Função para carregar bots existentes
-function loadBots() {
-  const apiKey = localStorage.getItem('apiKey');
-  if (!apiKey) {
-    alert("Por favor, faça login.");
-    return;
-  }
-
-  fetch('https://api.retune.so/v1/bots', {
-    headers: {
-      'Authorization': `Bearer ${apiKey}`
+    if (!response.ok) {
+      throw new Error(`Erro: ${response.status} - Não foi possível criar um novo thread`);
     }
-  })
-  .then(response => response.json())
-  .then(data => {
-    const botsList = document.getElementById('bots-list');
-    botsList.innerHTML = '';
 
-    if (data && data.bots) {
-      data.bots.forEach(bot => {
-        const botItem = document.createElement('div');
-        botItem.textContent = `Bot: ${bot.name} (ID: ${bot.id})`;
-        botsList.appendChild(botItem);
+    const data = await response.json();
+    alert('Novo thread criado com sucesso!');
+
+  } catch (error) {
+    console.error('Erro ao criar thread:', error);
+    showError(`Erro ao criar thread: ${error.message}`);
+  }
+});
+
+// Função para carregar os threads
+loadThreadsBtn.addEventListener('click', async function() {
+  const apiKey = apiKeyInput.value;
+  const chatId = chatIdInput.value;
+
+  if (!apiKey || !chatId) {
+    showError('API Key e Chat ID são obrigatórios.');
+    return;
+  }
+
+  try {
+    const response = await fetch(`https://retune.so/api/chat/${chatId}/threads`, {
+      method: 'POST',
+      headers: {
+        'X-Workspace-API-Key': apiKey,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`Erro: ${response.status} - Não foi possível carregar os threads`);
+    }
+
+    const data = await response.json();
+    threadSection.style.display = 'block';
+    threadList.innerHTML = ''; // Limpa a lista de threads anterior
+
+    data.threads.forEach(thread => {
+      const threadElement = document.createElement('div');
+      threadElement.classList.add('conversation');
+      threadElement.innerText = `Thread ID: ${thread.id}`;
+      threadElement.addEventListener('click', () => {
+        // Carrega o ID do thread para continuar a conversa
+        threadIdInput.value = thread.id;
+        continueSection.style.display = 'block';
       });
-    }
-  })
-  .catch(error => console.error("Erro ao carregar bots:", error));
-}
+      threadList.appendChild(threadElement);
+    });
 
-// Função para iniciar uma nova conversa
-function createConversation() {
-  const apiKey = localStorage.getItem('apiKey');
-  const botId = prompt("Insira o ID do Bot para iniciar uma conversa:");
+  } catch (error) {
+    console.error('Erro ao carregar threads:', error);
+    showError(`Erro ao carregar threads: ${error.message}`);
+  }
+});
 
-  if (!apiKey || !botId) {
-    alert("API Key ou Bot ID não fornecidos.");
+// Função para enviar uma mensagem para um thread existente
+sendMessageBtn.addEventListener('click', async function() {
+  const apiKey = apiKeyInput.value;
+  const chatId = chatIdInput.value;
+  const threadId = threadIdInput.value;
+  const message = messageInput.value;
+
+  if (!apiKey || !chatId || !threadId || !message) {
+    showError('Todos os campos são obrigatórios.');
     return;
   }
 
-  fetch(`https://api.retune.so/v1/bots/${botId}/conversations`, {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${apiKey}`,
-      'Content-Type': 'application/json'
+  try {
+    const response = await fetch(`https://retune.so/api/chat/${chatId}/response`, {
+      method: 'POST',
+      headers: {
+        'X-Workspace-API-Key': apiKey,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        threadId: threadId,
+        input: message
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`Erro: ${response.status} - Não foi possível enviar a mensagem`);
     }
-  })
-  .then(response => response.json())
-  .then(data => {
-    alert("Conversa iniciada com sucesso!");
-    loadConversations(botId);
-  })
-  .catch(error => console.error("Erro ao iniciar conversa:", error));
-}
 
-// Função para carregar conversas existentes
-function loadConversations() {
-  const apiKey = localStorage.getItem('apiKey');
-  const botId = prompt("Insira o ID do Bot para carregar conversas:");
+    const data = await response.json();
+    alert('Mensagem enviada com sucesso!');
 
-  if (!apiKey || !botId) {
-    alert("API Key ou Bot ID não fornecidos.");
-    return;
+  } catch (error) {
+    console.error('Erro ao enviar mensagem:', error);
+    showError(`Erro ao enviar mensagem: ${error.message}`);
   }
-
-  fetch(`https://api.retune.so/v1/bots/${botId}/conversations`, {
-    headers: {
-      'Authorization': `Bearer ${apiKey}`
-    }
-  })
-  .then(response => response.json())
-  .then(data => {
-    const conversationsList = document.getElementById('conversations-list');
-    conversationsList.innerHTML = '';
-
-    if (data && data.conversations) {
-      data.conversations.forEach(conversation => {
-        const conversationItem = document.createElement('div');
-        conversationItem.textContent = `Conversa ID: ${conversation.id}`;
-        conversationsList.appendChild(conversationItem);
-      });
-    }
-  })
-  .catch(error => console.error("Erro ao carregar conversas:", error));
-}
+});
