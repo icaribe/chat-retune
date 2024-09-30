@@ -1,12 +1,8 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
 body {
   font-family: Arial, sans-serif;
-  background-color: #f4f4f4;
+  background-color: #f0f0f0;
+  margin: 0;
+  padding: 0;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -14,38 +10,64 @@ body {
 }
 
 .container {
-  background-color: #fff;
+  background-color: white;
   padding: 20px;
-  border-radius: 8px;
+  border-radius: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  text-align: center;
+  width: 400px;
 }
 
 h1 {
-  margin-bottom: 20px;
+  text-align: center;
+  color: #333;
 }
 
-.form-container {
-  margin: 20px 0;
+label {
+  margin-top: 10px;
+  display: block;
+  font-weight: bold;
 }
 
-input, button {
+input[type="text"], textarea {
+  width: 100%;
   padding: 10px;
-  margin: 10px;
+  margin-top: 5px;
+  margin-bottom: 15px;
   border: 1px solid #ccc;
-  border-radius: 4px;
+  border-radius: 5px;
 }
 
 button {
-  background-color: #4CAF50;
+  width: 100%;
+  padding: 10px;
+  background-color: #28a745;
   color: white;
+  border: none;
+  border-radius: 5px;
   cursor: pointer;
 }
 
 button:hover {
-  background-color: #45a049;
+  background-color: #218838;
 }
 
-#bots-list, #conversations-list {
+.conversation-list {
   margin-top: 20px;
+}
+
+.conversation {
+  padding: 10px;
+  background-color: #e9ecef;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+
+.conversation:hover {
+  background-color: #ced4da;
+}
+
+.error {
+  color: red;
+  font-weight: bold;
 }
