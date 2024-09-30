@@ -3,38 +3,49 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Retune Bot Interface</title>
+  <title>Re:tune Chat Manager</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+
   <div class="container">
-    <h1>Bem-vindo ao Retune Bot Manager</h1>
-    
-    <!-- Formulário de Login -->
-    <div id="login-container" class="form-container">
-      <h2>Login</h2>
-      <input type="text" id="api-key" placeholder="Insira sua API Key">
-      <button onclick="login()">Entrar</button>
+    <h1>Re:tune Chat Manager</h1>
+
+    <!-- Input para API Key -->
+    <label for="apiKey">API Key</label>
+    <input type="text" id="apiKey" placeholder="Sua API Key">
+
+    <!-- Input para o Chat ID -->
+    <label for="chatId">Chat ID</label>
+    <input type="text" id="chatId" placeholder="ID do Chat">
+
+    <!-- Botão para criar um novo thread -->
+    <button id="createThreadBtn">Criar Novo Thread</button>
+
+    <!-- Botão para carregar threads -->
+    <button id="loadThreadsBtn">Carregar Threads</button>
+
+    <!-- Lista de threads carregados -->
+    <div id="threadSection" class="conversation-list" style="display:none;">
+      <h2>Threads Carregados</h2>
+      <div id="threadList"></div>
     </div>
 
-    <!-- Formulário de Gerenciamento de Bots -->
-    <div id="bot-container" class="form-container" style="display:none;">
-      <h2>Gerenciar Bots</h2>
-      <button onclick="createBot()">Criar Novo Bot</button>
-      <button onclick="loadBots()">Carregar Bots Existentes</button>
-      <div id="bots-list"></div>
+    <!-- Input para continuar uma conversa -->
+    <div id="continueSection" style="display:none;">
+      <label for="threadId">Thread ID (Para Continuar Conversa)</label>
+      <input type="text" id="threadId" placeholder="ID do Thread">
+
+      <label for="message">Mensagem</label>
+      <textarea id="message" placeholder="Digite sua mensagem"></textarea>
+
+      <button id="sendMessageBtn">Enviar Mensagem</button>
     </div>
 
-    <!-- Formulário de Gerenciamento de Conversas -->
-    <div id="conversation-container" class="form-container" style="display:none;">
-      <h2>Gerenciar Conversas</h2>
-      <button onclick="createConversation()">Iniciar Nova Conversa</button>
-      <button onclick="loadConversations()">Carregar Conversas Existentes</button>
-      <div id="conversations-list"></div>
-    </div>
-
+    <div id="errorMessage" class="error" style="display:none;"></div>
   </div>
 
   <script src="script.js"></script>
+
 </body>
 </html>
