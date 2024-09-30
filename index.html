@@ -1,51 +1,36 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Re:tune Chat Manager</title>
-  <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retune API Example</title>
+    <!-- Vinculando o arquivo CSS externo -->
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <div class="container">
+        <h1>Retune API Examples</h1>
 
-  <div class="container">
-    <h1>Re:tune Chat Manager</h1>
+        <h2>Criar novo thread</h2>
+        <button onclick="createNewThread()">Criar Thread</button>
 
-    <!-- Input para API Key -->
-    <label for="apiKey">API Key</label>
-    <input type="text" id="apiKey" placeholder="Sua API Key">
+        <h2>Continuar conversa em um thread</h2>
+        <label for="threadId">ID do Thread:</label>
+        <input type="text" id="threadId" placeholder="Insira o ID do Thread">
+        <label for="inputMessage">Mensagem:</label>
+        <textarea id="inputMessage" placeholder="Digite sua mensagem"></textarea>
+        <button onclick="continueInThread()">Enviar Mensagem</button>
 
-    <!-- Input para o Chat ID -->
-    <label for="chatId">Chat ID</label>
-    <input type="text" id="chatId" placeholder="ID do Chat">
+        <h2>Obter todos os threads</h2>
+        <button onclick="getAllThreads()">Obter Threads</button>
 
-    <!-- Botão para criar um novo thread -->
-    <button id="createThreadBtn">Criar Novo Thread</button>
+        <h2>Obter todas as mensagens de um thread</h2>
+        <button onclick="getAllMessages()">Obter Mensagens</button>
 
-    <!-- Botão para carregar threads -->
-    <button id="loadThreadsBtn">Carregar Threads</button>
-
-    <!-- Lista de threads carregados -->
-    <div id="threadSection" class="conversation-list" style="display:none;">
-      <h2>Threads Carregados</h2>
-      <div id="threadList"></div>
+        <div class="response" id="response"></div>
     </div>
 
-    <!-- Input para continuar uma conversa -->
-    <div id="continueSection" style="display:none;">
-      <label for="threadId">Thread ID (Para Continuar Conversa)</label>
-      <input type="text" id="threadId" placeholder="ID do Thread">
-
-      <label for="message">Mensagem</label>
-      <textarea id="message" placeholder="Digite sua mensagem"></textarea>
-
-      <button id="sendMessageBtn">Enviar Mensagem</button>
-    </div>
-
-    <div id="errorMessage" class="error" style="display:none;"></div>
-  </div>
-
-  <script src="script.js"></script>
-
+    <!-- Vinculando o arquivo JS externo -->
+    <script src="script.js"></script>
 </body>
 </html>
